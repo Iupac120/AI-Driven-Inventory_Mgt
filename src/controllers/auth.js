@@ -572,7 +572,7 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
   // delete otp in record
   const otpDel = await User.findOne({email:email})
   if(!otpDel){
-    throw new BadRequestError("Please resend, cannot find your ID")
+    return res.status(401).json("Please resend, cannot find your ID")
   }
   const otp = randomOtp()
   const hashOtp = await hashData(otp)
@@ -605,13 +605,14 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
     //check if email exist
     const emailExist = await User.findOne({email})
     if(!emailExist){
-      throw new UnAuthorizedError("Invalid email account, please check your email")
+      return res.status(401).json("Invalid email account, please check your email")
     }
     //check if the email is verified
     if(!emailExist.isEmailVerified){
-      throw new BadRequestError("You have not been verified.Click the link send to you or resend verification to be verified")
+      return res.status(401).json("You have not been verified.Click the link send to you or resend verification to be verified")
     }
     //update databse
+    console.log("here")
     const resetString = randomString()
     const hashedString = await hashData(resetString)
     emailExist.passwordResetToken = hashedString,
@@ -641,7 +642,7 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
     //check if the user exist in db
     const foundResetLink = await User.findById({_id:userId});
     if (!foundResetLink){
-      throw new UnAuthorizedError("User ID could not be found to sete password")
+      return res.status(401).json("User ID could not be found to sete password")
     }
     //check if the found reset has not expired
     const expiresAt = foundResetLink.resetPasswordExpires
@@ -783,39 +784,8 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
     res.status(500).json({message:err.message})
   }
   }
-  // admin finds any user
-  static async findUser (req,res){
-    try{
-    const user = await User.findById(req.params.id)
-    if(!user){
-      throw new UnauthorizedError("User not found")
-    }
-    const {password, ...others} = user._doc
-    res.status(200).json({
-      status:"success",
-      data:others
-    })
-  }catch(err){
-    res.status(500).json({message:err.message})
-  }
-  }
 
-    // admin finds all users
-    static async findAllUser (req,res){
-      try{
-      const users = await User.find({})
-      if(!users){
-        throw new UnAuthorizedError("User not found")
-      }
-      const {password, ...others} = users._doc
-      res.status(200).json({
-        status:"success",
-        data:others
-      })
-    }catch(err){
-      res.status(500).json({message:err.message})
-    }
-    }
+  
 }
  
 

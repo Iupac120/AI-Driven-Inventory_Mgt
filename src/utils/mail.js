@@ -26,7 +26,7 @@ const currenturl = "http://localhost:3000";
 export default  async function sendVerificationEmail({_id, email},uniqueString,res) {
     //mail content
     let mailOptions = {
-        from: process.env.AUTH_EMAIL,
+        from: '"Team 1 Group" <iupac120@gmail.com>',
         to: email,
         subject: "verify your Email",
         html:`<p>Verify your Email account to complete your signup and login.</p>
@@ -48,7 +48,7 @@ export  const sendResetEmail = async({_id,email},resetString,res) => {
   //Now send the email
   // mail message
   const mailOptions = {
-    from:"iupac120@gmail.com",
+    from:'"Team 1 Group" <iupac120@gmail.com>',
     to:email,//should a dynamic html for multiple messages
     subject:"Password Reset",
     html:`<p>We heard that you lost your password.</p><p>Don't worry, use the below link to reset it.</p>

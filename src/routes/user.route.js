@@ -66,10 +66,7 @@ router.get("/refresh", UserController.refresh)
 router.get("/logout",UserController.logout)
 //delete user
 router.delete("/profile/:userId", jwtAuthentication,UserController.deleteUser)
-//admin can find any user
-router.get("/find/:id", verifyTokenAndAdmin,UserController.deleteUser)
-//admin can find all users
-router.get("/find", verifyTokenAndAdmin,UserController.deleteUser)
+
 //Exporting the User Router
 export { router }
 
