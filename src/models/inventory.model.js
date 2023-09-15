@@ -4,35 +4,28 @@ const inventorySchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    barcode:{
-        type: String,
-        required: true,
-        
+    quantity:{
+        type: Number,
+        default: 0
     },
-    photo:{
-        type: String
+    minimumQuantity:{
+        type: Number,
+        default: 10
     },
     price:{
         type: Number,
         default: 0
     },
-    quantity:{
+    total:{
         type:Number,
         default: 0
     },
-    unitOfMeasure:{
-        type:Number,
-        default:0
-    },
-    productCategory:{
-        type: String,
-        required: true
-    },
-    expiryDate:{
-        type:Date,
+    inStock:{
+        type:Boolean,
+        default:false
     }
 },{
     timestamps: true
 })
 
-export default mongoose.model("Product",inventorySchema)
+export default mongoose.model("Inventory",inventorySchema)

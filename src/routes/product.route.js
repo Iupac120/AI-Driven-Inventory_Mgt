@@ -8,12 +8,11 @@ const router = Router()
 // Setting up the User signup/login routes
 router.post("/add", trycatchHandler(ProductController.createProduct));
 router.get('/getAllProduct', trycatchHandler(ProductController.getAllProduct));
-router.post('/set-minimum-stock', trycatchHandler(ProductController.createMinimumStock));
 router.get('/searchByName', trycatchHandler(ProductController.searchByName));
 router.get('/searchByBarcode', trycatchHandler(ProductController.searchByBarcode));
-router.get('/:id', trycatchHandler(ProductController.getSingleProduct));
-router.put('/:id', trycatchHandler(ProductController.updateProduct));
-router.delete('/:id', trycatchHandler(ProductController.deleteProduct));
+router.get('/item/:id', trycatchHandler(ProductController.getSingleProduct));
+router.put('/item/:id', trycatchHandler(ProductController.updateProduct));
+router.delete('/item/:id', trycatchHandler(ProductController.deleteProduct));
 
 
 

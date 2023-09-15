@@ -16,15 +16,7 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    quantity:{
-        type:Number,
-        default: 0
-    },
-    unitOfMeasure:{
-        type:Number,
-        default:0
-    },
-    productCategory:{
+    category:{
         type: String,
         required: true
     },
