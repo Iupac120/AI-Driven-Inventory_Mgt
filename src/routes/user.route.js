@@ -44,7 +44,7 @@ import { verifyTokenAndAdmin } from '../utils/verifyTokenAndAdmin.js';
 const router = express.Router()
 
 // User Creation Route
-router.post("/signup", trycatchHandler(UserController.createUser))
+router.post("/signup", UserController.createUser)
 // login router
 router.post("/login",UserController.loginUser)
 //user profile
