@@ -15,7 +15,7 @@ import cloudinary from "cloudinary";
 
 
 export default class UserController {
-    static async getUserPage (req,res){
+    static async getCreateUser (req,res){
       res.send("welcone to hackathon team 1")
     }
     static async createUser(req, res ) {
@@ -66,7 +66,9 @@ export default class UserController {
           // message
         })
     }
-    
+    static async getVerifyUser (req,res){
+      res.send("Verify with user otp code")
+    }
     static async verifyUser(req, res) {
       // Extract verification token
       const verifyEmailToken = req.body.verifyEmailToken;
@@ -105,7 +107,9 @@ export default class UserController {
       },
       })
     }
-
+    static async getLogin (req,res){
+      res.send("Login user")
+    }
     static async loginUser(req, res) {
       const { error } = loginUserValidator.validate(req.body)
       if (error) throw new BadRequestError("Invalid login details");
@@ -143,7 +147,9 @@ export default class UserController {
         },
       })
     }
-
+    static async getForgotPassword (req,res){
+      res.send("Enter registered email")
+    }
     static async forgotPassword(req, res ) {
       const { email } = req.body;
       // // Confirm  email exists
@@ -172,6 +178,9 @@ export default class UserController {
           // message
         })
 
+    }
+    static async getResetPasswordCode (req,res){
+      res.send("Enter your reset passord token sent to you")
     }
     // Verify the Reset password code  
     static async resetPasswordCode(req, res) {
@@ -266,7 +275,9 @@ export default class UserController {
         data: user,
         })
     }
-
+    static async getUpdatePersonalInfo (req,res){
+      res.send("update user info")
+    }
     static async updatePersonalInfo(req, res,) {
         const userId = req.user._id;
         // if(!userId) throw new UnAuthorizedError('Not authorized')
@@ -288,7 +299,9 @@ export default class UserController {
         data: userData,
         })
     }
-
+    static async getUpdateAddressInfo (req,res){
+      res.send("update user address")
+    }
      static async updateAddressInfo(req, res,) {
         const userId = req.user._id;
         // if(!userId) throw new UnAuthorizedError('Not authorized')
@@ -308,6 +321,10 @@ export default class UserController {
         message: "Address updated successfully",
         data: userData,
         })
+    }
+    
+    static async getProfilePhotoUpload (req,res){
+      res.send("upload user photo")
     }
 
     static async profilePhotoUpload(req, res, next) {
