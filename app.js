@@ -43,6 +43,8 @@ import passport from "passport";
 import session from "express-session"
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { notFound } from './src/middlewares/not-found.js';
+import { errorHandler } from './src/middlewares/errorHandler.js';
 import cookieSession from "cookie-session"
 //import { passportCredential } from './src/domains/passport/passport.js.js';
 app.use(express.urlencoded({extended:false}));
@@ -106,6 +108,6 @@ const start = async() => {
 
 //error middlewares
 
-// app.use(notFound)
-// app.use(errorHandler)
+app.use(notFound)
+app.use(errorHandler)
 start()

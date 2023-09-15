@@ -420,7 +420,7 @@ export default class UserController {
     //check if the user Email already exist in the databse  
         const emailExist = await User.findOne({email})
         if (emailExist){
-          throw new UnAuthorizedError("Email alreaday exist, please login")
+          return res.status(401).json({msg:"Email alreaday exist, please login"})
         }
         //hash otp code and string
         const otp = randomOtp()
@@ -493,87 +493,8 @@ export default class UserController {
   }
 
 
-  //get user email link to verify
-  static async getUserEmailLink (req, res) {
-    const {userId, uniqueString} = req.params
-      //get the user verication mail ID
-      //const userExist = await UserVerification.find({userId})
-      try{
-      const userExist = await User.findById({_id:userId}).exec()
-      //valid userId
-      if(userExist){
-        const expiresAt = await userExist.resetPasswordExpires
-        //compare if the uniques is valid
-        const hashedUniqueString = await userExist.emailVerificationToken
-        //check for expires time
-        if (expiresAt < Date.now()){
-          //user verification does not exist
-          userExist.emailVerificationToken = undefined
-          userExist.resetPasswordExpires = undefined
-          await userExist.save()
-          throw new UnAuthorizedError("Token has expired, resend to get a new token")
-          
-        }
-        //valid user exist
-        //uniques string from params and hashed string fromdatabase
-        const validUser = await bcrypt.compare(uniqueString, hashedUniqueString)
-        if(!validUser){
-            throw new UnauthorizedError("Invalid verification passed")
-          }
-              //update user model by changing the verified
-        userExist.isEmailVerified = true
-        userExist.emailVerificationToken = undefined
-        userExist.resetPasswordExpires = undefined 
-        await userExist.save()
-        //send a html message to the user
-        res.status(200).json({status:"Success"})
-      }else{
-        let message = "Account record does'nt exit or has been verified. Please signup or login"
-        res.status(402).json({status:"failed",msg:message})
-        //res.redirect("/user/verified") //route to redirect error in link
-      }
-    }catch(err){
-      res.status(500).json({message:err.message})
-    }
-  }
 
 
-
-  //get a verify email link when error occured 
-  static async getUserEmailMsg(req,res,next){
-    res.render('verifiedMail')
-  }
-
-
-  // resending verification link
-  static resendVericationLink = trycatchHandler(async(req,res, next) => {
-       // Joi validation
-       const {error, value} = await emailValidator.validate(req.body)
-       if(error){
-        //  console.log(error.details)
-        //  const err = new Error(error.details[0].message)
-        //  err.status = 400
-        //  err.message = error.details[0].message
-        //  return next(err)
-        res.status(400).json(error.message)
-       }
-    const {email} = req.body
-    const delAlreadyMail = await User.findOne({email}).exec()
-    if(!delAlreadyMail){
-      throw new BadRequestError("Verification resend error. Please try again")
-    }
-    const uniqueString = randomString()
-    const hashedString = await hashData(uniqueString)
-    delAlreadyMail.emailVerificationToken = hashedString
-    delAlreadyMail.resetPasswordCreatedAt = Date.now()
-    delAlreadyMail.resetPasswordExpires = Date.now() + 21600000
-    await delAlreadyMail.save()
-    await sendVerificationEmail(delAlreadyMail,uniqueString,res)
-    res.status(200).json({
-      status:"Success",
-      message:`Link send to your email, ${email}`
-    })
-  })
 
 
   //verify OTP Email
@@ -590,17 +511,18 @@ export default class UserController {
       res.status(400).json(error.message)
      }
      try{
-    const {params:{userId},body:{otp}} = req
+    const {body:{otp,  email}} = req
     //check if the user OTP exists
-    const userOTPverifyID = await User.findById({_id:userId})
+    const userOTPverifyID = await User.findOne({email})
+    //const userOTPverifyID = await User.findById({_id:userId})
     if (!userOTPverifyID){
-      throw new UnauthorizedError("Account is invalid or has been valid already")
+      throw new UnAuthorizedError("Account is invalid or has been valid already")
     }
     //check if the otp has not expired
     const expiresAt = userOTPverifyID.resetPasswordExpires
     const hashedOTP = userOTPverifyID.otpVerificationToken
     if(userOTPverifyID.isEmailVerified){
-      throw new UnauthorizedError("You have been verified. Please login with your email and password")
+      throw new UnAuthorizedError("You have been verified. Please login with your email and password")
     }
     if (expiresAt < Date.now()){
       // otp has expired, delete from the record
@@ -609,13 +531,13 @@ export default class UserController {
         userOTPverifyID.resetPasswordCreatedAt = undefined
   
       await userOTPverifyID.save()
-      throw new UnauthorizedError("OTP has expired, please request again")
+      throw new UnAuthorizedError("OTP has expired, please request again")
     }
     //hash valid otp
     //const salt = await bcrypt.genSalt(10)
     const isMatch = await bcrypt.compare(otp,hashedOTP)
     if (!isMatch){
-      throw new UnauthorizedError("Invalid code passed, check again")
+      throw new UnAuthorizedError("Invalid code passed, check again")
     }
     //update valid otp user
     userOTPverifyID.isEmailVerified = true,
@@ -683,7 +605,7 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
     //check if email exist
     const emailExist = await User.findOne({email})
     if(!emailExist){
-      throw new UnauthorizedError("Invalid email account, please check your email")
+      throw new UnAuthorizedError("Invalid email account, please check your email")
     }
     //check if the email is verified
     if(!emailExist.isEmailVerified){
@@ -719,18 +641,18 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
     //check if the user exist in db
     const foundResetLink = await User.findById({_id:userId});
     if (!foundResetLink){
-      throw new UnauthorizedError("User ID could not be found to sete password")
+      throw new UnAuthorizedError("User ID could not be found to sete password")
     }
     //check if the found reset has not expired
     const expiresAt = foundResetLink.resetPasswordExpires
     if (expiresAt < Date.now()){
       //await PasswordReset.deleteOne({userId})
-      throw new UnauthorizedError("Sorry, your link has expired, press reset button to genearte new one")
+      throw new UnAuthorizedError("Sorry, your link has expired, press reset button to genearte new one")
     } 
     //reset password record still valid
     const isMatch = await bcrypt.compare(resetString, foundResetLink.passwordResetToken)
     if (!isMatch){
-      throw new UnauthorizedError("Incorrect password record, try again")
+      throw new UnAuthorizedError("Incorrect password record, try again")
     }
     //if the passwords match, store it in databse
     const genPass = await hashData(newPassword)
@@ -851,7 +773,7 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
     try{
     const user = await User.findByIdAndDelete(req.params.userId)
     if(!user){
-      throw new UnauthorizedError("User not found")
+      throw new UnAuthorizedError("User not found")
     }
     res.status(200).json({
       status:"success",
@@ -883,7 +805,7 @@ static resendOTPVerification = trycatchHandler(async(req,res,next) => {
       try{
       const users = await User.find({})
       if(!users){
-        throw new UnauthorizedError("User not found")
+        throw new UnAuthorizedError("User not found")
       }
       const {password, ...others} = users._doc
       res.status(200).json({

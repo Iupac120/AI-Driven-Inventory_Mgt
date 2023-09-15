@@ -51,18 +51,13 @@ router.post("/login",UserController.loginUser)
 router.get("/profile",jwtAuthentication,UserController.profile)
 //update profile
 router.put("/Profile/:userId",jwtAuthentication,UserController.updateProfile)
-//link router for email
-router.get("/verify/:userId/:uniqueString",UserController.getUserEmailLink)
-// error link router for email
-router.get("/verified",UserController.getUserEmailMsg)
 //request password reset router
 router.post("/requestPasswordReset",UserController.requestPasswordReset)
 // reset password
 router.post("/resetPassword/:userId/:resetString",UserController.resetPassword)
-//resend email verification
-router.post("/resendVerificationLink",UserController.resendVericationLink)
+
 //otp verification route
-router.post("/verify_otp/:userId",UserController.verifyOTP)
+router.post("/verify_otp",UserController.verifyOTP)
 //resend otp verification after expiration
 router.post("/resend_otp_verification", UserController.resendOTPVerification)
 // refresh route
