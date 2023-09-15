@@ -2,23 +2,18 @@ import mongoose from "mongoose";
 const productSchema = new mongoose.Schema({
     name:{
         type:String,
-        required: true,
-        min: 1,
-        max: 100
+        required: true
     },
     barcode:{
         type: String,
         required: true,
-        unique: true,
-        lowercase: true,
         
     },
     photo:{
-        type: String,
-        required: true,
+        type: String
     },
     price:{
-        type: Boolean,
+        type: Number,
         default: 0
     },
     quantity:{
@@ -35,7 +30,6 @@ const productSchema = new mongoose.Schema({
     },
     expiryDate:{
         type:Date,
-        default:Date.now()
     }
 },{
     timestamps: true

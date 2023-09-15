@@ -3,41 +3,31 @@ import {createCanvas} from "canvas"
 import Barcode from "jsbarcode"
 
 export default class ProductController {
-    static async createProduct (req,res){
-        const canvas = createCanvas()
-        Barcode(canvas, req.params.text, {
-            format:"CODE128",
-            displayValue: true,
-            fontSize: 18,
-            textMargin: 10
-        })
-        res.type('image/png')
-        const stream =  canvas.createPNGStream()
-        stream.pipe(res)
-        const {name, barcode, photo, price, quantity,unitofMeasure, productCategory,expiryDate} = req.body
-        const existingItem = await InventoryItem.findOne({ barcode });
-
-    if (existingItem) {
-      return res.status(400).json({ error: 'Item with this barcode already exists' });
-    }
-
-    // Create a new inventory item
-    const newItem = new Product({
-      name,
-      barcode,
-      photo,
-      price,
-      quantity,
-      unitOfMeasure,
-      productCategory,
-      expiryDate,
-    });
-
-    // Save the new item to the database
-    await newItem.save();
-
-    return res.status(201).json(newItem);
-    }
+  static async createProduct(req, res) {
+      const { name, barcode, photo, price, quantity, unitOfMeasure, productCategory, expiryDate } = req.body;
+      // Check if an item with the same barcode already exists
+      let existingItem = await Product.findOne({ barcode });
+      if (existingItem) {
+        // If the item exists, increment the quantity
+        existingItem.quantity += 1;
+        await existingItem.save();
+        return res.status(200).json("Item added"); // Return the updated item
+      }
+      // If the item doesn't exist, create a new one
+      const newItem = new Product({
+        name,
+        barcode,
+        photo,
+        price,
+        quantity: quantity || 1, // Set a default quantity if not provided
+        unitOfMeasure,
+        productCategory,
+        expiryDate,
+      });
+      await newItem.save();
+      return res.status(201).json(newItem); // Return the newly created item
+  }
+  
 
 
     static async createMinimumStock (req,res){
