@@ -19,7 +19,7 @@ transporter.verify((err,success) => {
     }
 })
 //url
-const currenturl = "http://localhost:3000";
+const currenturl = "http://localhost:5000";
 
  
 //send email verified link
