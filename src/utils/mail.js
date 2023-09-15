@@ -19,7 +19,8 @@ transporter.verify((err,success) => {
     }
 })
 //url
-const currenturl = "http://localhost:5000";
+const currenturl = "https://inventorymanagement-mgmh.onrender.com"
+//const currenturl = "http://localhost:5000";
 
  
 //send email verified link
