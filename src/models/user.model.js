@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema({
     lastName: String,
     phone:{
         type: String,
+        unique: false
     },
     countryName: String,
     city: String,

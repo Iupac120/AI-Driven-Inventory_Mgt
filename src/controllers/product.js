@@ -104,7 +104,46 @@ static async deleteProduct (req, res) {
   }
 }
 
+    
+// Search inventory items by name
+static async searchByName (req, res){
+  const searchName = req.query.name;
+
+  if (!searchName) {
+    return res.status(400).send({ error: 'Name query parameter is required.' });
+  }
+
+  try {
+    const items = await InventoryItem.find({ name: { $regex: searchName, $options: 'i' } });
+    res.status(200).send(items);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 }
+
+// Search inventory items by barcode
+static async searchByBarcode (req, res){
+  const searchBarcode = req.query.barcode;
+
+  if (!searchBarcode) {
+    return res.status(400).send({ error: 'Barcode query parameter is required.' });
+  }
+
+  try {
+    const item = await InventoryItem.findOne({ barcode: searchBarcode });
+    if (!item) {
+      return res.status(404).send();
+    }
+    res.status(200).send(item);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+}
+
+
+
 
 
 

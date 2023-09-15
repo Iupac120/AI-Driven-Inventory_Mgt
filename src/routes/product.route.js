@@ -6,8 +6,14 @@ import { userAuthMiddleWare } from "../middlewares/authMiddleware.js";
 // Setting up the Router
 const router = Router()
 // Setting up the User signup/login routes
-router.post("/inventory/add", trycatchHandler(ProductController.createProduct));
-router.post('/inventory/set-minimum-stock', trycatchHandler(ProductController.createMinimumStock));
+router.post("/add", trycatchHandler(ProductController.createProduct));
+router.get('/getAllProduct', trycatchHandler(ProductController.getAllProduct));
+router.post('/set-minimum-stock', trycatchHandler(ProductController.createMinimumStock));
+router.get('/searchByName', trycatchHandler(ProductController.searchByName));
+router.get('/searchByBarcode', trycatchHandler(ProductController.searchByBarcode));
+router.get('/:id', trycatchHandler(ProductController.getSingleProduct));
+router.put('/:id', trycatchHandler(ProductController.updateProduct));
+router.delete('/:id', trycatchHandler(ProductController.deleteProduct));
 
 
 
