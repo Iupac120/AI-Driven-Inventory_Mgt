@@ -38,6 +38,8 @@ export default class ProductController {
 
     return res.status(201).json(newItem);
     }
+
+
     static async createMinimumStock (req,res){
             const { barcode, minimumStock } = req.body;
             const item = await Product.findOne({ barcode })
@@ -48,4 +50,62 @@ export default class ProductController {
             await item.save();
             return res.status(200).json(item);
     } 
+
+        // Get all inventory items
+  static async getAllProduct (req, res){
+    const items = await InventoryItem.find();
+    res.status(200).send(items);
+ }
+
+// Get a specific inventory item by ID
+  static async getSingleProduct (req, res){
+  try {
+    const item = await InventoryItem.findById(req.params.id);
+    if (!item) {
+      return res.status(404).send();
+    }
+    res.status(200).send(item);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 }
+
+// Update an inventory item by ID
+static async updateProduct (req, res) {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ['name', 'barcode', 'photo', 'price', 'quantity', 'unitOfMeasure', 'productCategory', 'expiryDate', 'minimumStock'];
+  const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+  if (!isValidOperation) {
+    return res.status(400).send({ error: 'Invalid updates!' });
+  }
+
+  try {
+    const item = await InventoryItem.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!item) {
+      return res.status(404).send();
+    }
+    res.status(200).send(item);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+}
+
+// Delete an inventory item by ID
+static async deleteProduct (req, res) {
+  try {
+    const item = await InventoryItem.findByIdAndDelete(req.params.id);
+    if (!item) {
+      return res.status(404).send();
+    }
+    res.status(200).send(item);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+}
+
+
+
+

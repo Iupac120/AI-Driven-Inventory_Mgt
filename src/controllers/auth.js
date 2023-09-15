@@ -15,7 +15,9 @@ import cloudinary from "cloudinary";
 
 
 export default class UserController {
-
+    static async getUserPage (req,res){
+      res.send("welcone to hackathon team 1")
+    }
     static async createUser(req, res ) {
       // Joi validation
       // const {error} = createUserValidator.validate(req.body)
