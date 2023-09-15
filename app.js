@@ -43,11 +43,6 @@ import passport from "passport";
 import session from "express-session"
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import exphbs from "express-handlebars"
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import path from 'path';
-const __dirname = dirname(fileURLToPath(import.meta.url));
 import cookieSession from "cookie-session"
 //import { passportCredential } from './src/domains/passport/passport.js.js';
 app.use(express.urlencoded({extended:false}));
@@ -58,12 +53,7 @@ app.use(cors());
 import connectDB from './src/connection/database.js';
 import {router as userRouter} from "./src/routes/user.route.js"
 import {router as productRouter} from "./src/routes/product.route.js"
-//import {router as orderRouter} from "./src/domains/order/orderRoutes.js"
-//import {router as cartRouter} from "./src/domains/cart/cartRoutes.js"
-//import {router as paymentRouter} from "./src/domains/payment/stripe.js"
-//import {router as indexRouter} from "./src/domains/passport/index.js"
-//import { errorHandler } from './src/middlewares/errorHandler.js';
-//import { notFound } from './src/middlewares/notFound.js';
+
 app.use(express.json())
 app.use(morgan('tiny'))
 //passportCredential(passport)
@@ -95,22 +85,11 @@ app.use(function(req,res,next){
 app.use(cookieParser())
 app.use('/api/v1/user',userRouter)
 app.use("/api/v1/product",productRouter)
-// app.use("/api/v1/order",orderRouter)
-// app.use("/api/v1/cart",cartRouter)
-// app.use("/api/v1/checkout",paymentRouter)
-// app.use("/",indexRouter)
-//view engine
 
-//app.engine('.hbs', exphbs({ defaultLayout: 'layout', extname: '.hbs' }));
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
 
 app.get("/",(req,res) => {
     res.render("index")
 })
-// app.get("/",(req,res) => {
-//     res.send(req.user?req.user:`not logged in, login withfacebbok or google`)
-// })
 
 const PORT = process.env.PORT || 5000
 
