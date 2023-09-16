@@ -140,11 +140,11 @@ const UserSchema = new mongoose.Schema({
 //     next()
 // })
 UserSchema.methods.accessJwtToken = function (){
-return jwt.sign({userId:this._id, username:this.username},process.env.ACCESS_TOKEN,{expiresIn:'id'})
+return jwt.sign({userId:this._id, username:this.username},process.env.ACCESS_TOKEN,{expiresIn:'1d'})
 } 
 
 UserSchema.methods.refreshJwtToken = function (){
-  return jwt.sign({userId:this._id, username:this.username},process.env.REFRESH_TOKEN,{expiresIn:process.env.REFRESH_LIFETIME})
+  return jwt.sign({userId:this._id, username:this.username},process.env.REFRESH_TOKEN,{expiresIn:'30d'})
   }  
 
 UserSchema.methods.comparePassword = async function(candidatePassword){
