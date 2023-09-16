@@ -71,7 +71,7 @@ export const sendOTPVericationMail = async({_id,email},otp,res) => {
       subject:"OTP Verification",
       html:`<p> Please enter ${otp} to verify your email and complete the sign in.</p>
               <p>This code <b> expires in 30 minutes <b>.<p>
-              <p>Press <a href=https://hackathon-team-1-frontend.vercel.app/auth/verify-email?code=${otp}> here </a> to procced.</p>`
+              <p>Press <a href=https://hackathon-team-1-frontend.vercel.app/auth/verify-email> here </a> to procced.</p>`
     };
   
     //send otp to the email
