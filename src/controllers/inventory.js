@@ -111,16 +111,27 @@ static async search(req, res) {
     });
 }
 
-static async checkStock (req, res){
-    const lowStockThreshold = 10; // Set your desired threshold
-    const items = await Inventory.find();
-    const lowStockItems = items.filter((item) => item.quantity < lowStockThreshold);
-    if(lowStockItems){
-      res.status(200).json({ status: 'Success', data: lowStockItems });
-    }else{
-      res.status(500).json({ error: 'Internal server error' });
+static async checkStock(req, res) {
+    const lowStockThreshold = 10;
+    const lowStockItems = await Inventory.find({ quantity: { $lt: lowStockThreshold } });
+    const expiredProducts = await Product.find({ expiryDate: { $lt: Date.now() } });
+    let responseMessage = 'Inventory status:';
+    let responseData = {};
+    if (lowStockItems.length > 0) {
+      responseMessage += ' Some items are low in stock.';
+      responseData.lowStockItems = lowStockItems;
+    } else {
+      responseMessage += ' Stock levels are good.';
     }
+    if (expiredProducts.length > 0) {
+      responseMessage += ' Some products have expired.';
+      responseData.expiredProducts = expiredProducts;
+    } else {
+      responseMessage += ' No expired products.';
+    }
+    res.status(200).json({ status: responseMessage, data: responseData });
 }
+
 }
 
 
