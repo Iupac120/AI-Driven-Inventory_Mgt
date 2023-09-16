@@ -50,10 +50,12 @@ import cookieSession from "cookie-session"
 app.use(express.urlencoded({extended:false}));
 import MongoStore from 'connect-mongo';
 app.use(express.static('public'))
-app.use(cors({
-     origin:process.env.origin ,
-     credentials: true
-}));
+const corsOptions = {
+    origin:process.env.origin, 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', 
+    credentials: true,
+  };
+app.use(cors(corsOptions));
 
 import connectDB from './src/connection/database.js';
 import {router as userRouter} from "./src/routes/user.route.js"

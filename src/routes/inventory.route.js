@@ -9,6 +9,7 @@ const router = Router()
 router.get('/getAllInventory', trycatchHandler(InventoryController.getAllInventory));
 router.get('/get', trycatchHandler(InventoryController.getSingleInventory));
 router.get('/search', trycatchHandler(InventoryController.search));
+router.get('/check-stock', trycatchHandler(InventoryController.checkStock));
 router.put('/item/:id', trycatchHandler(InventoryController.updateInventory));
 router.delete('/item/:id', trycatchHandler(InventoryController.deleteInventory));
 

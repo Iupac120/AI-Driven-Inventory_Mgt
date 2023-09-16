@@ -117,7 +117,27 @@ static async search(req, res) {
   }
 }
 
+static async checkStock (req, res){
+  try {
+    const lowStockThreshold = 10; // Set your desired threshold
+
+    const items = await Inventory.find();
+
+    const lowStockItems = items.filter((item) => item.quantity < lowStockThreshold);
+
+    // You can send the low stock items to the frontend as JSON
+    res.status(200).json({ status: 'Success', data: lowStockItems });
+  } catch (error) {
+    console.error('Error checking stock:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+  setInterval(this.checkStock,  30 * 60 * 1000); // Run once a day (adjust as needed)
+
 }
+
+}
+
+
 
 
 
