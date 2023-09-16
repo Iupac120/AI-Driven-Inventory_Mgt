@@ -116,5 +116,5 @@ const start = async() => {
 //error middlewares
 
 app.use(notFound)
-app.use(errorHandler)
+//app.use(errorHandler)
 start()
