@@ -1,53 +1,20 @@
 import Product from "../models/product.model.js"
 import Inventory from "../models/inventory.model.js"
-import {createCanvas} from "canvas"
-import Barcode from "jsbarcode"
 
 export default class ProductController {
-  static async createProduct(req, res) {
-      const { name, barcode, price, category, expiryDate } = req.body;
-      // Check if an item with the same barcode already exists
-      let existingItem = await Product.findOne({ barcode });
-      if (existingItem) {
-        // If the item exists, increment the quantity
-        const inventoryProduct = await Inventory.findOneAndUpdate({name: existingItem.name})
-        inventoryProduct.quantity += 1;
-        inventoryProduct.total = inventoryProduct.quantity * inventoryProduct.price
-        await inventoryProduct.save()
-        return res.status(200).json("Item added"); // Return the updated item
-      }
-      // If the item doesn't exist, create a new one
-      const newItem = new Product({
-        name,
-        barcode,
-        price,
-        category,
-        expiryDate,
-      });
-      await newItem.save();
-      const newInventory = new Inventory({
-        name,
-        price,
-        quantity: 1,
-        inStock: true,
-        total:price
-      })
-      await newInventory.save()
-      return res.status(201).json(newItem); // Return the newly created item
-  }
- 
-
+   
         // Get all inventory items
-  static async getAllProduct (req, res){
-    const items = await Product.find();
+  static async getAllInventory (req, res){
+    const items = await Inventory.find();
     res.status(200).send(items);
  }
 
 // Get a specific inventory item by ID
-  static async getSingleProduct (req, res){
-    const item = await Product.findById(req.params.id);
+  static async getSingleInventory (req, res){
+    const {name} = req.body
+    const item = await Product.findOne({name});
     if (!item) {
-      return res.status(404).send();
+      return res.status(404).send("Item does not exist");
     }
     res.status(200).send(item);
 }
@@ -85,8 +52,12 @@ static async deleteProduct (req, res) {
 
     
 // Search inventory items by name
-static async searchByName (req, res){
-  const searchName = req.query.name;
+static async search (req, res){
+  const {name, price, quantity, inStock} = req.query
+  const queryObject = {}
+  if (inStock){
+        queryObject.inStock = inStock === 'true'? true: false
+     }
 
   if (!searchName) {
     return res.status(400).send({ error: 'Name query parameter is required.' });
