@@ -97,7 +97,7 @@ app.use("/api/v1/inventory",inventoryRouter)
 
 
 app.get("/",(req,res) => {
-    res.render("index")
+    res.send("Hello welcome")
 })
 
 const PORT = process.env.PORT || 5000
