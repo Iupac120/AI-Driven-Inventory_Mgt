@@ -140,7 +140,7 @@ const UserSchema = new mongoose.Schema({
 //     next()
 // })
 UserSchema.methods.accessJwtToken = function (){
-return jwt.sign({userId:this._id, username:this.username},process.env.ACCESS_TOKEN,{expiresIn:process.env.ACCESS_LIFETIME})
+return jwt.sign({userId:this._id, username:this.username},process.env.ACCESS_TOKEN,{expiresIn:'30s'})
 } 
 
 UserSchema.methods.refreshJwtToken = function (){
