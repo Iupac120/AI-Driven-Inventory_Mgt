@@ -19,7 +19,7 @@ transporter.verify((err,success) => {
     }
 })
 //url
-const currenturl = "https://inventorymanagement-mgmh.onrender.com"
+const currenturl = process.env.origin
 //const currenturl = "http://localhost:5000";
 
  
