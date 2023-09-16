@@ -7,7 +7,7 @@ export default async function jwtAuthentication(req,res,next) {
     //check headers
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer')){
-        throw new UnauthorizedError("Invalid credential")
+        return res.status(401).json("Invalid credential")
     }
     //if header is valid
     const token = authHeader.split(' ')[1]
@@ -18,6 +18,6 @@ export default async function jwtAuthentication(req,res,next) {
         //req.user = await User.find({_id: payload.userId}).select("-password")
         next()
     } catch (error) {
-        throw new UnauthorizedError("Failed credential verfication")
+        return res.status(401).json("Failed credential verfication")
     }
 } 
