@@ -19,7 +19,7 @@ transporter.verify((err,success) => {
     }
 })
 //url
-const currenturl = process.env.origin
+const currenturl = process.env.url
 //const currenturl = "http://localhost:5000";
 
  
