@@ -58,6 +58,7 @@ app.use(cors({
 import connectDB from './src/connection/database.js';
 import {router as userRouter} from "./src/routes/user.route.js"
 import {router as productRouter} from "./src/routes/product.route.js"
+import {router as inventoryRouter} from "./src/routes/inventory.route.js"
 
 app.use(express.json())
 app.use(morgan('tiny'))
@@ -90,6 +91,7 @@ app.use(function(req,res,next){
 app.use(cookieParser())
 app.use('/api/v1/user',userRouter)
 app.use("/api/v1/product",productRouter)
+app.use("/api/v1/inventory",inventoryRouter)
 
 
 app.get("/",(req,res) => {

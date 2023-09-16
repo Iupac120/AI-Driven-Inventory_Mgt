@@ -1,7 +1,7 @@
 import Product from "../models/product.model.js"
 import Inventory from "../models/inventory.model.js"
 
-export default class ProductController {
+export default class InventoryController {
    
         // Get all inventory items
   static async getAllInventory (req, res){
@@ -20,30 +20,52 @@ export default class ProductController {
 }
 
 // Update an inventory item by ID
-static async updateProduct (req, res) {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ['name', 'barcode', 'photo', 'price', 'category', 'expiryDate', 'minimumStock'];
-  const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+static async updateInventory (req, res) {
+  // const updates = Object.keys(req.body);
+  // const allowedUpdates = ['name', 'price', 'minimumQuantity', 'inStock', 'quantity'];
+  // const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
-  if (!isValidOperation) {
-    return res.status(400).send({ error: 'Invalid updates!' });
-  }
-    const item = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!item) {
-      return res.status(404).send();
+  // if (!isValidOperation) {
+  //   return res.status(400).send({ error: 'Invalid updates!' });
+  // }
+  //   const item = await Inventory.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  //   if (!item) {
+  //     return res.status(404).send("No item updated");
+  //   }
+  //   res.status(200).send(item);
+  try{
+    const {name,price,minimumQuantity,inStock,quantity} = req.body
+    const newProduct = await Inventory.findByIdAndUpdate(req.params.productId,{
+        $set:{
+          name,
+          price,
+          minimumQuantity,
+          inStock,
+          quantity
+        }
+    },{
+        new: true, 
+        runValidators: true
+    })
+    if(newProduct){
+      newProduct.total = quantity*price
     }
-    res.status(200).send(item);
+    await newProduct.save()
+    if(!newProduct){
+        return res.status(403).json("No inventory updated")
+    }
+    res.status(201).json({
+        data: newProduct
+    })
+}catch(err){
+    res.status(500).json({message:err.message})
+  }
 }
 
+
 // Delete an inventory item by ID
-static async deleteProduct (req, res) {
+static async deleteInventory (req, res) {
     const item = await Product.findByIdAndDelete(req.params.id);
-    if(item){
-      const inventoryProduct = await Inventory.findOneAndUpdate({name: item.name})
-        inventoryProduct.quantity -= 1;
-        inventoryProduct.total = inventoryProduct.quantity * inventoryProduct.price
-        await inventoryProduct.save()
-    }
     if (!item) {
       return res.status(404).send("Item not found");
     }
@@ -52,31 +74,47 @@ static async deleteProduct (req, res) {
 
     
 // Search inventory items by name
-static async search (req, res){
-  const {name, price, quantity, inStock} = req.query
-  const queryObject = {}
-  if (inStock){
-        queryObject.inStock = inStock === 'true'? true: false
-     }
-
-  if (!searchName) {
-    return res.status(400).send({ error: 'Name query parameter is required.' });
-  }
-    const items = await Product.find({ name: { $regex: searchName, $options: 'i' } });
-    res.status(200).send(items);
-}
-
-// Search inventory items by barcode
-static async searchByBarcode (req, res){
-  const searchBarcode = req.query.barcode;
-  if (!searchBarcode) {
-    return res.status(400).send({ error: 'Barcode query parameter is required.' });
-  }
-    const item = await Product.findOne({ barcode: searchBarcode });
-    if (!item) {
-      return res.status(404).send();
+static async search(req, res) {
+  try {
+    const { name,barcode,price, quantity, inStock } = req.query;
+    const queryObject = {};
+    if (inStock) {
+      queryObject.inStock = inStock === 'true'; // Convert the string to a boolean
     }
-    res.status(200).send(item);
+    if(barcode){
+      const products = await Product.find({ barcode });      
+      // Extract the names from the found products and add them to the query
+      const productNames = products.map(product => product.name);
+      queryObject.name = { $in: productNames };
+
+    }
+    if (name) {
+      queryObject.name = { $regex: name, $options: 'i' };
+    }
+    if (price) {
+      // Assuming price is a numeric value, you can search for items with a price less than or equal to the specified value
+      queryObject.price = { $lte: parseFloat(price) };
+    }
+
+    if (quantity) {
+      // Assuming quantity is a numeric value, you can search for items with a quantity greater than or equal to the specified value
+      queryObject.quantity = { $gte: parseInt(quantity) };
+    }
+
+    const inventoryProducts = await Inventory.find(queryObject);
+
+    if (!inventoryProducts || inventoryProducts.length === 0) {
+      return res.status(404).json({ status: "Product not found" });
+    }
+
+    res.status(200).json({
+      status: "Success",
+      data: inventoryProducts,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 }
 
 }
