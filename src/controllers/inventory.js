@@ -2,11 +2,10 @@ import Product from "../models/product.model.js"
 import Inventory from "../models/inventory.model.js"
 
 export default class InventoryController {
-   
-        // Get all inventory items
   static async getAllInventory (req, res){
     const items = await Inventory.find();
     res.status(200).send(items);
+    setInterval(this.checkStock,  30 * 60 * 1000); 
  }
 
 // Get a specific inventory item by ID
@@ -75,7 +74,6 @@ static async deleteInventory (req, res) {
     
 // Search inventory items by name
 static async search(req, res) {
-  try {
     const { name,barcode,price, quantity, inStock } = req.query;
     const queryObject = {};
     if (inStock) {
@@ -111,32 +109,19 @@ static async search(req, res) {
       status: "Success",
       data: inventoryProducts,
     });
-  } catch (error) {
-    console.error('Error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
 }
 
 static async checkStock (req, res){
-  try {
     const lowStockThreshold = 10; // Set your desired threshold
-
     const items = await Inventory.find();
-
     const lowStockItems = items.filter((item) => item.quantity < lowStockThreshold);
-
-    // You can send the low stock items to the frontend as JSON
-    res.status(200).json({ status: 'Success', data: lowStockItems });
-  } catch (error) {
-    console.error('Error checking stock:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-  setInterval(this.checkStock,  30 * 60 * 1000); // Run once a day (adjust as needed)
-
+    if(lowStockItems){
+      res.status(200).json({ status: 'Success', data: lowStockItems });
+    }else{
+      res.status(500).json({ error: 'Internal server error' });
+    }
 }
-
 }
-
 
 
 

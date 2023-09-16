@@ -450,7 +450,10 @@ export default class UserController {
       })
   })
 
-
+static async verifyAuth (req,res){
+  const {code} = req.query
+  res.status(200).json(`This is your otp to finish up your signup ${code}`)
+}
   //login a rerurning user
   static async loginUser (req, res){
     // Joi validation
@@ -470,7 +473,7 @@ export default class UserController {
         if (!emailExist){
           return next(createCustomError('Email does not exist, verify email or signup', 401))
         }
-        if(!emailExist.isEmailVerified) throw new UnauthorizedError("Verify with the code send to you to login")
+        if(!emailExist.isEmailVerified) throw new UnAuthorizedError("Verify with the code send to you to login")
         //check if the password is correct
         const isCorrectPassword = await bcrypt.compare(password, emailExist.password)
         if(!isCorrectPassword) throw new UnAuthorizedError("Incorrect password")
